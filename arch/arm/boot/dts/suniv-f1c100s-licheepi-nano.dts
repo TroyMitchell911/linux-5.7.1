@@ -1,0 +1,58 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR X11)
+/*
+ * Copyright 2018 Icenowy Zheng <icenowy@aosc.io>
+ */
+
+/dts-v1/;
+#include "suniv-f1c100s.dtsi"
+
+/ {
+	model = "Lichee Pi Nano";
+	compatible = "licheepi,licheepi-nano", "allwinner,suniv-f1c100s";
+
+	aliases {
+		serial0 = &uart0;
+	};
+
+	chosen {
+		stdout-path = "serial0:115200n8";
+	};
+
+	reg_vcc3v3: vcc3v3 {
+        compatible = "regulator-fixed";
+        regulator-name = "vcc3v3";
+        regulator-min-microvolt = <3300000>;
+        regulator-max-microvolt = <3300000>;
+    };
+};
+
+&uart0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart0_pe_pins>;
+	status = "okay";
+};
+
+&mmc0 {
+        vmmc-supply = <&reg_vcc3v3>;
+        bus-width = <4>;
+        broken-cd;
+        status = "okay";
+};
+
+&spi1 {
+    st7789v@0 {
+        status = "okay";
+        compatible = "sitronix,st7789v";
+               reg = <0>;
+               spi-max-frequency =<32000000>;        //SPI时钟32M
+               rotate =<90>;                    //屏幕旋转90度
+               spi-cpol;
+               spi-cpha;
+               rgb;                           //颜色格式RGB
+               fps =<30>;                      //刷新30帧率
+               buswidth =<8>;                   //总线宽度8
+               reset-gpios=<&pio 4 7 0>;   //GPIOE7
+               dc-gpios  =<&pio 4 10 0>;   //GPIOE10
+               debug =<1>;                     //不开启调试
+        };
+}; 
